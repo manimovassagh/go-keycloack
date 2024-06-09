@@ -31,7 +31,10 @@ func main() {
 
 	e.GET("/secure", SecureEndpoint)
 
-	e.Start(":4000")
+	err := e.Start(":4000")
+	if err != nil {
+		return
+	}
 }
 
 func TokenAuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
