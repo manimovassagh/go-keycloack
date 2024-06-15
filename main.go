@@ -13,7 +13,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
-//nn
+//n
 var (
 	keycloakURL   = "http://localhost:8080"
 	realm         = "mani"
