@@ -1,0 +1,19 @@
+{
+    "realm": "mani",
+    "enabled": true,
+    "clients": [
+      {
+        "clientId": "go",
+        "enabled": true,
+        "clientAuthenticatorType": "client-secret",
+        "secret": "aZbUGUvcXxETMznmtsFB1Mm8TEWK4Hpz",
+        "redirectUris": [],
+        "webOrigins": [],
+        "directAccessGrantsEnabled": true,
+        "serviceAccountsEnabled": true,
+        "publicClient": false,
+        "protocol": "openid-connect"
+      }
+    ]
+  }
+  

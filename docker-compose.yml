@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KEYCLOAK_IMPORT=/tmp/realm.json
+    volumes:
+      - ./realm.json:/tmp/realm.json
+    ports:
+      - "8080:8080"
+    command: ["start-dev"]
+
+  go-app:
+    build: .
+    ports:
+      - "4000:4000"
+    depends_on:
+      - keycloak
+    environment:
+      - KEYCLOAK_URL=http://keycloak:8080
+      - REALM=mani
+      - CLIENT_ID=go
+      - CLIENT_SECRET=aZbUGUvcXxETMznmtsFB1Mm8TEWK4Hpz
