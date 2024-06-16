@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"key/auth"
 	"key/config"
 	"key/handlers"
@@ -27,6 +28,7 @@ func main() {
 
 	err := e.Start(":4000")
 	if err != nil {
+		fmt.Println(err)
 		return
 	}
 }
