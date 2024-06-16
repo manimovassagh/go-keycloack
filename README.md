@@ -42,6 +42,7 @@ cd your_project
 ### Set Up Environment Variables
 
 Create a `.env` file in the project root directory and set the necessary environment variables:
+Obviously you should use your own variables. the followings are only samples :)
 
 ```sh
 KEYCLOAK_URL=http://localhost:8080
