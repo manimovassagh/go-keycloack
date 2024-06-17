@@ -1,4 +1,4 @@
-name: Go CI
+name: Docker Compose CI
 
 on:
   push:
@@ -9,78 +9,43 @@ on:
       - main
 
 jobs:
-  build:
+  Dockeri:
     runs-on: ubuntu-latest
-
-    services:
-      keycloak:
-        image: quay.io/keycloak/keycloak:latest
-        ports:
-          - 8080:8080
-        env:
-          KEYCLOAK_USER: admin
-          KEYCLOAK_PASSWORD: admin
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.22'
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
 
-    - name: Cache Go modules
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.cache/go-build
-          ~/go/pkg/mod
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-        restore-keys: |
-          ${{ runner.os }}-go-
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
 
-    - name: Install dependencies
-      run: go mod download
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Set up Docker Compose
+      run: sudo apt-get update && sudo apt-get install docker-compose -y
+
+    - name: Build and run services
+      run: docker-compose up --build -d
 
     - name: Wait for Keycloak to be ready
       run: |
-        echo "Waiting for Keycloak to start..."
-        for i in {1..30}; do
-          if curl -s http://localhost:8080/auth > /dev/null; then
-            echo "Keycloak is up and running!"
-            break
-          else
-            echo "Waiting for Keycloak..."
-            sleep 10
-          fi
-        done
-        if ! curl -s http://localhost:8080/auth > /dev/null; then
-          echo "Keycloak failed to start within the expected time."
-          exit 1
-        fi
-
-    - name: Set up Keycloak
-      run: |
-        curl -s -X POST "http://localhost:8080/auth/realms/master/protocol/openid-connect/token" \
-          -H "Content-Type: application/x-www-form-urlencoded" \
-          -d "username=admin" \
-          -d "password=admin" \
-          -d "grant_type=password" \
-          -d "client_id=admin-cli" > token.json
-        export TOKEN=$(jq -r '.access_token' token.json)
-        curl -s -X POST "http://localhost:8080/auth/admin/realms" \
-          -H "Content-Type: application/json" \
-          -H "Authorization: Bearer $TOKEN" \
-          -d @realm.json
-
-    - name: Build
-      run: go build -v ./...
+        echo "Waiting for 60 seconds for Keycloak to start..."
+        sleep 60
 
     - name: Run tests
-      run: go test -v ./...
+      run: docker-compose exec app go test -v ./...
 
     - name: Run linters
       run: |
-        go install golang.org/x/lint/golint@latest
-        golint ./...
+        docker-compose exec app go install golang.org/x/lint/golint@latest
+        docker-compose exec app golint ./...
+
+    - name: Shut down services
+      run: docker-compose down
