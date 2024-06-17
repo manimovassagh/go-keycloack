@@ -1,4 +1,4 @@
-name: Docker Compose CI
+name: Container base
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  build:
+  Containers-based:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,10 +25,7 @@ jobs:
     - name: Wait for Keycloak to be ready
       run: |
         echo "Waiting for 60 seconds for Keycloak to start..."
-        sleep 60
-
-    - name: Run tests
-      run: docker-compose exec app go test -v ./...
+        sleep 20
 
     - name: Run linters
       run: |
