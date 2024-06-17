@@ -1,29 +1,74 @@
-# This workflow will build a golang project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
-
-name: Go
+name: Go CI
 
 on:
-  workflow_dispatch:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
+
+    services:
+      keycloak:
+        image: jboss/keycloak
+        ports:
+          - 8080:8080
+        env:
+          KEYCLOAK_USER: admin
+          KEYCLOAK_PASSWORD: admin
+
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v3
 
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: '1.20'
+        go-version: 1.20
+
+    - name: Cache Go modules
+      uses: actions/cache@v3
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Install dependencies
+      run: go mod download
+
+    - name: Wait for Keycloak to be ready
+      run: |
+        until curl -s http://localhost:8080/auth; do
+          echo "Waiting for Keycloak..."
+          sleep 10
+        done
+
+    - name: Set up Keycloak
+      run: |
+        curl -s -X POST "http://localhost:8080/auth/realms/master/protocol/openid-connect/token" \
+          -H "Content-Type: application/x-www-form-urlencoded" \
+          -d "username=admin" \
+          -d "password=admin" \
+          -d "grant_type=password" \
+          -d "client_id=admin-cli" > token.json
+        export TOKEN=$(jq -r '.access_token' token.json)
+        curl -s -X POST "http://localhost:8080/auth/admin/realms" \
+          -H "Content-Type: application/json" \
+          -H "Authorization: Bearer $TOKEN" \
+          -d @realm.json
 
     - name: Build
       run: go build -v ./...
 
-    - name: Test
+    - name: Run tests
       run: go test -v ./...
+
+    - name: Run linters
+      run: |
+        go install golang.org/x/lint/golint@latest
+        golint ./...
