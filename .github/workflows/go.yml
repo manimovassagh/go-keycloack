@@ -45,10 +45,20 @@ jobs:
 
     - name: Wait for Keycloak to be ready
       run: |
-        until curl -s http://localhost:8080/auth; do
-          echo "Waiting for Keycloak..."
-          sleep 10
+        echo "Waiting for Keycloak to start..."
+        for i in {1..30}; do
+          if curl -s http://localhost:8080/auth > /dev/null; then
+            echo "Keycloak is up and running!"
+            break
+          else
+            echo "Waiting for Keycloak..."
+            sleep 10
+          fi
         done
+        if ! curl -s http://localhost:8080/auth > /dev/null; then
+          echo "Keycloak failed to start within the expected time."
+          exit 1
+        fi
 
     - name: Set up Keycloak
       run: |
