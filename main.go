@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	config := config.NewConfig()
+	resultConfig := config.NewConfig()
 
 	e := echo.New()
 
@@ -23,7 +23,7 @@ func main() {
 
 	// Group for secured routes
 	secured := e.Group("/secure")
-	secured.Use(auth.TokenAuthMiddleware(config))
+	secured.Use(auth.TokenAuthMiddleware(resultConfig))
 	secured.GET("", handlers.SecureEndpoint)
 
 	err := e.Start(":4000")
