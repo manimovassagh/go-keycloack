@@ -19,6 +19,8 @@ func main() {
 	e.Use(middleware.Recover())
 
 
+
+	// Authentication route
 	// Public route
 	e.GET("/public", handlers.PublicEndpoint)
 
