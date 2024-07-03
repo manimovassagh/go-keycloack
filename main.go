@@ -23,7 +23,6 @@ func main() {
 	e.GET("/public", handlers.PublicEndpoint)
 
 
-	
 	// Group for secured routes
 	secured := e.Group("/secure")
 	secured.Use(auth.TokenAuthMiddleware(resultConfig))
