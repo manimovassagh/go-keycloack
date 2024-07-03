@@ -18,10 +18,12 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	
+
 	// Public route
 	e.GET("/public", handlers.PublicEndpoint)
 
+
+	
 	// Group for secured routes
 	secured := e.Group("/secure")
 	secured.Use(auth.TokenAuthMiddleware(resultConfig))
