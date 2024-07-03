@@ -18,6 +18,7 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
+	
 	// Public route
 	e.GET("/public", handlers.PublicEndpoint)
 
