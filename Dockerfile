@@ -14,3 +14,4 @@ RUN go build -o /goapp
 EXPOSE 4000
 
 CMD ["/goapp"]
+
