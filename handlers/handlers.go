@@ -9,7 +9,7 @@ import (
 )
 
 func SecureEndpoint(c echo.Context) error {
-	//t
+	//
 	user := c.Get("user").(jwt.MapClaims)
 	return c.JSON(http.StatusOK, map[string]string{
 		"message": fmt.Sprintf("Hello, %s!", user["preferred_username"]),
