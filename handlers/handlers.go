@@ -9,12 +9,14 @@ import (
 )
 
 func SecureEndpoint(c echo.Context) error {
+	//test this
 	user := c.Get("user").(jwt.MapClaims)
 	return c.JSON(http.StatusOK, map[string]string{
 		"message": fmt.Sprintf("Hello, %s!", user["preferred_username"]),
 	})
 }
 func PublicEndpoint(c echo.Context) error {
+
 	return c.JSON(http.StatusOK, map[string]string{
 		"message": "This is a public endpoint.",
 	})
