@@ -5,7 +5,7 @@ import (
 
 	"github.com/Nerzal/gocloak/v13"
 )
-//this is a bran
+//this is a bra
 type Config struct {
 	KeycloakURL   string
 	Realm         string
