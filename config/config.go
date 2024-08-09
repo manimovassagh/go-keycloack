@@ -5,7 +5,7 @@ import (
 
 	"github.com/Nerzal/gocloak/v13"
 )
-//mai
+//m
 type Config struct {
 	KeycloakURL   string
 	Realm         string
