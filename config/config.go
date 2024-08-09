@@ -14,7 +14,7 @@ type Config struct {
 	GocloakClient *gocloak.GoCloak
 }
 // this is a function that set config
-// this
+
 func NewConfig() *Config {
 	keycloakURL := getEnv("KEYCLOAK_URL", "http://localhost:8080")
 	return &Config{
